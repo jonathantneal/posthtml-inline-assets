@@ -51,7 +51,7 @@ module.exports = function (options) {
 		return options.inline[key];
 	});
 
-	return function (tree) {
+	return function inlineAssets (tree) {
 		return new Promise(function (resolve) {
 			// initialize inlined assets
 			var inlined = [];
