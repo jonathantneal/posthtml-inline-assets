@@ -1,6 +1,6 @@
 {
   "name": "posthtml-inline-assets",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Inline external scripts, styles, and images in HTML",
   "keywords": [
     "posthtml",

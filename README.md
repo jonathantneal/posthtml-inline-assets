@@ -1,6 +1,6 @@
 # Inline Assets
 
-<img src="http://posthtml.github.io/posthtml/logo.svg" alt="PostHTML Logo" style="float:right;height:80px;width:80px" width="80" height="80" align="right">
+<a href="https://github.com/posthtml/posthtml"><img src="http://posthtml.github.io/posthtml/logo.svg" alt="PostHTML Logo" style="float:right;height:80px;width:80px" width="80" height="80" align="right"></a>
 
 [![NPM Version][npm-img]][npm] [![Build Status][ci-img]][ci]
 
