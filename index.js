@@ -67,7 +67,7 @@ module.exports = function (options) {
 						// return read file
 						inlined.push(fs.readFile(full).then(function (buffer) {
 							if (typeof type.then === 'function') {
-								type.then(node, {
+								return type.then(node, {
 									buffer:       buffer,
 									originalPath: href,
 									resolvedPath: full,

@@ -38,6 +38,26 @@ var tests = {
 					}
 				}
 			}
+		},
+		'basic:cssnano': {
+			message: 'supports basic usage with minified styles',
+			options: {
+				from:   './test/index.html',
+				inline: {
+					style: {
+						then: function (node, data) {
+							delete node.attrs.href;
+							delete node.attrs.rel;
+
+							node.tag = 'style';
+
+							return cssnano.process(data.buffer.toString('utf8')).then(function (result) {
+								node.content = [result.css];
+							});
+						}
+					}
+				}
+			}
 		}
 	}
 };
@@ -45,6 +65,7 @@ var tests = {
 var debug = true;
 var dir   = './test/';
 
+var cssnano = require('cssnano');
 var fs      = require('fs');
 var minify  = require('uglify-js').minify;
 var path    = require('path');
