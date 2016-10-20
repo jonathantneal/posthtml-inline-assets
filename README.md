@@ -102,9 +102,9 @@ grunt.initConfig({
 #### `from`
 
 Type: `String`  
-Default: `__filename`
+Default: `currentFile.from || process.cwd()`
 
-Specifies the location of the HTML file. It is used to determine the relative directory of the assets. By default, the current script path is used.
+Specifies the location of the HTML file. It is used to determine the relative directory of the assets. By default, the current file is used, otherwise the current working directory is used.
 
 #### `inline`
 

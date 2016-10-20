@@ -1,88 +1,72 @@
-var posthtml = require('posthtml');
 var filetype = require('file-type');
+var fs       = require('fs-promise');
+var path     = require('path');
+var posthtml = require('posthtml');
 
-var fs   = require('fs-promise');
-var path = require('path');
-
-module.exports = function (options) {
-	// extend options from defaults
-	options = extend({
-		from:   __filename,
-		inline: {
-			image: {
-				check: function (node) {
-					return node.tag === 'img' && node.attrs && node.attrs.src;
-				},
-				then: function (node, data) {
-					node.attrs.src = 'data:' + data.mimeType + ';base64,' + data.buffer.toString('base64');
-				}
-			},
-			script: {
-				check: function (node) {
-					return node.tag === 'script' && node.attrs && node.attrs.src;
-				},
-				then: function (node, data) {
-					delete node.attrs.src;
-
-					node.content = [data.buffer.toString('utf8')];
-				}
-			},
-			style: {
-				check: function (node) {
-					return node.tag === 'link' && node.attrs && node.attrs.rel === 'stylesheet' && node.attrs.href;
-				},
-				then: function (node, data) {
-					delete node.attrs.href;
-					delete node.attrs.rel;
-
-					node.tag = 'style';
-
-					node.content = [data.buffer.toString('utf8')];
-				}
-			}
-		}
-	}, options);
-
-	// get relative directory
-	var from = path.dirname(path.resolve(options.from));
-
-	// cache type transforms
-	var types = Object.keys(options.inline || []).map(function (key) {
-		return options.inline[key];
-	});
+module.exports = function (rawOptions) {
+	// options
+	var options = extend(defaultOptions, rawOptions);
 
 	return function inlineAssets(tree) {
-		return new Promise(function (resolve) {
-			// initialize inlined assets
-			var inlined = [];
+		// relative directory
+		var pathToCWD = process.cwd();
 
+		if (!options.from && tree.options && tree.options.from) {
+			pathToCWD = path.dirname(path.resolve(tree.options.from));
+		} else if (options.from) {
+			pathToCWD = path.dirname(path.resolve(options.from));
+		}
+
+		// initialize inlined assets
+		var readFiles = [];
+		var warnings = [];
+
+		// cached inline keys
+		var inlineKeys = options.inline && Object.keys(options.inline);
+
+		if (inlineKeys) {
 			// walk each element
 			tree.walk(function (node) {
-				types.forEach(function (type) {
-					var href = typeof type.check === 'function' && type.check(node);
+				inlineKeys.forEach(function (key) {
+					var type = options.inline[key];
 
-					if (href) {
-						var full = path.join(from, href);
+					var hasCheck = typeof type.check === 'function';
+					var hasThen = typeof type.then === 'function';
 
-						// return read file
-						inlined.push(fs.readFile(full).then(function (buffer) {
-							if (typeof type.then === 'function') {
+					if (hasCheck && hasThen) {
+						var nodeChecked = type.check(node);
+
+						if (nodeChecked) {
+							var pathToInline = path.resolve(pathToCWD, nodeChecked);
+
+							// push readFile promise
+							readFiles.push(fs.readFile(pathToInline).then(function (buffer) {
+								var mime = (filetype(buffer) || {}).mime;
+
+								// processed node
 								return type.then(node, {
-									buffer:       buffer,
-									originalPath: href,
-									resolvedPath: full,
-									mimeType:     (filetype(buffer) || {}).mime
+									buffer:   buffer,
+									from:     pathToInline,
+									mimeType: mime
 								});
-							}
-						}));
+							}, function (error) {
+								warnings.push(error);
+							}));
+						}
 					}
 				});
 
 				return node;
 			});
+		}
 
-			// resolve all inlined assets
-			Promise.all(inlined).then(resolve.bind(null, tree));
+		// resolve all inlined assets
+		return Promise.all(readFiles).then(function () {
+			if (warnings.length) {
+				console.warn(warnings);
+			}
+
+			return tree;
 		});
 	};
 };
@@ -91,20 +75,62 @@ module.exports.process = function (contents, options) {
 	return posthtml().use(module.exports(options)).process(contents);
 };
 
-function extend(objectA, objectB) {
-	objectA = objectA || {};
-	objectB = objectB || {};
+var defaultOptions = {
+	inline: {
+		image: {
+			check: function (node) {
+				return node.tag === 'img' && node.attrs && node.attrs.src;
+			},
+			then: function (node, data) {
+				node.attrs.src = 'data:' + data.mimeType + ';base64,' + data.buffer.toString('base64');
+			}
+		},
+		script: {
+			check: function (node) {
+				return node.tag === 'script' && node.attrs && node.attrs.src;
+			},
+			then: function (node, data) {
+				delete node.attrs.src;
 
-	for (var key in objectB) {
-		var valueA = objectA[key];
-		var valueB = objectB[key];
+				node.content = [data.buffer.toString('utf8')];
+			}
+		},
+		style: {
+			check: function (node) {
+				return node.tag === 'link' && node.attrs && node.attrs.rel === 'stylesheet' && node.attrs.href;
+			},
+			then: function (node, data) {
+				delete node.attrs.href;
+				delete node.attrs.rel;
 
-		if (typeof valueA === 'object' && Object(valueA) === valueA && typeof valueB === 'object' && Object(valueB) === valueB) {
-			objectA[key] = extend(valueA, valueB);
-		} else {
-			objectA[key] = valueB;
+				node.tag = 'style';
+
+				node.content = [data.buffer.toString('utf8')];
+			}
 		}
 	}
+};
 
-	return objectA;
+function extend(objectA, objectB) {
+	var objectC = {};
+
+	Object.keys(objectA).concat(Object.keys(objectB)).filter(function (item, index, array) {
+		return array.indexOf(item) === index;
+	}).forEach(function (key) {
+		var valueA = objectA[key];
+
+		if (key in objectB) {
+			var valueB = objectB[key];
+
+			if (typeof valueA === 'object' && Object(valueA) === valueA && typeof valueB === 'object' && Object(valueB) === valueB) {
+				objectC[key] = extend(valueA, valueB);
+			} else {
+				objectC[key] = valueB;
+			}
+		} else {
+			objectC[key] = valueA;
+		}
+	});
+
+	return objectC;
 }

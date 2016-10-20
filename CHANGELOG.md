@@ -1,3 +1,7 @@
+## 2.0.0 (2016-10-20)
+
+- Updated: `from` fallback is the current document
+
 ## 1.0.2 (2015-12-11)
 
 - Updated: Cleanup source for PostHTML debugging
