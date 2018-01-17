@@ -19,18 +19,18 @@
   },
   "dependencies": {
     "deep-assign": "^2.0.0",
-    "file-type": "^3.9.0",
-    "fs-extra": "^0.30.0",
-    "fs-promise": "^0.5.0",
-    "posthtml": "^0.9.1"
+    "file-type": "^7.4.0",
+    "fs-extra": "^5.0.0",
+    "fs-promise": "^2.0.3",
+    "posthtml": "^0.11.1"
   },
   "devDependencies": {
     "cssnano": "^3.7.7",
-    "eslint": "^3.8.1",
+    "eslint": "^4.15.0",
     "eslint-config-dev": "^2.0.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2",
-    "uglify-js": "^2.7.3"
+    "uglify-js": "^2.8.29"
   },
   "engines": {
     "node": ">=0.12.0"
