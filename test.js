@@ -6,6 +6,13 @@ var tests = {
 				from: './test/index.html'
 			}
 		},
+		'basic:root': {
+			message: 'supports basic usage with root option',
+			options: {
+				root: './test/',
+				from: './test/index.html'
+			}
+		},
 		'basic:noimage': {
 			message: 'supports basic usage without image transforms',
 			options: {
