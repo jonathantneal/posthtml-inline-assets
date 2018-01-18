@@ -99,6 +99,13 @@ grunt.initConfig({
 
 ## Options
 
+#### `root`
+
+Type: `String`  
+Default: ``
+
+Root directory of the project.
+
 #### `from`
 
 Type: `String`  
