@@ -43,10 +43,6 @@ module.exports = function (rawOptions) {
 								pathToInline = path.resolve(path.join(options.root, nodeChecked));
 							}
 
-							if (!fs.existsSync(pathToInline)) {
-								return;
-							}
-
 							// push readFile promise
 							readFiles.push(fs.readFile(pathToInline).then(function (buffer) {
 								var mime = (filetype(buffer) || {}).mime;
