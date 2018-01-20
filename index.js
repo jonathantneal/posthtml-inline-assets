@@ -1,144 +1,105 @@
-var filetype = require('file-type');
-var fs       = require('fs-promise');
-var path     = require('path');
-var posthtml = require('posthtml');
+// tooling
+import filetype from 'file-type';
+import fs from 'fse';
+import path from 'path';
+import defaultTransforms from './lib/default-transforms';
+import errorHandler from './lib/error-handler';
 
-module.exports = function (rawOptions) {
-	// options
-	var options = extend(defaultOptions, rawOptions);
+// plugin
+export default opts => {
+	// initialize root from options
+	const root = Object(opts).root;
 
-	return function inlineAssets(tree) {
-		// relative directory
-		var pathToCWD = process.cwd();
+	// initialize transform from options
+	const transforms = Object(opts).transforms === false
+		? {}
+	: assign(defaultTransforms, Object(opts).transforms || {});
 
-		if (!options.from && tree.options && tree.options.from) {
-			pathToCWD = path.dirname(path.resolve(tree.options.from));
-		} else if (options.from) {
-			pathToCWD = path.dirname(path.resolve(options.from));
-		}
+	return function posthtmlInlineAssets(tree) {
+		// initialize current working directory from options
+		const cwd = Object(opts).cwd
+			? path.resolve(opts.cwd)
+		: Object(tree.options).from
+			? path.dirname(path.resolve(tree.options.from))
+		: process.cwd();
 
-		// initialize inlined assets
-		var readFiles = [];
-		var warnings = [];
+		// initialize error handling from options
+		const resolution = Object(opts).errors;
 
-		// cached inline keys
-		var inlineKeys = options.inline && Object.keys(options.inline);
+		// file promises
+		const promises = [];
 
-		if (inlineKeys) {
-			// walk each element
-			tree.walk(function (node) {
-				inlineKeys.forEach(function (key) {
-					var type = options.inline[key];
+		// walk html nodes
+		tree.walk(node => {
+			// walk transforms
+			Object.keys(transforms).forEach(type => {
+				// transform
+				const transform = Object(transforms[type]);
 
-					var hasCheck = typeof type.check === 'function';
-					var hasThen = typeof type.then === 'function';
+				// resolved asset file path
+				const assetpath = typeof transform.resolve === 'function' && typeof transform.transform === 'function' && transform.resolve(node);
 
-					if (hasCheck && hasThen) {
-						var nodeChecked = type.check(node);
+				if (typeof assetpath === 'string') {
+					// absolute asset file path (used as "from")
+					const from = root && path.isAbsolute(assetpath)
+						? path.join(root, assetpath)
+					: path.resolve(cwd, assetpath);
 
-						if (nodeChecked) {
-							var pathToInline = path.resolve(pathToCWD, nodeChecked);
+					// add promise of asset contents
+					promises.push(
+						fs.readFile(from).then(
+							buffer => {
+								// file type (used as "mime")
+								const mime = (filetype(buffer) || {}).mime;
 
-							if (path.isAbsolute(nodeChecked) && options.root) {
-								pathToInline = path.resolve(path.join(options.root, nodeChecked));
+								// transform the node
+								return transform.transform(node, { from, buffer, mime });
 							}
-
-							if (!fs.existsSync(pathToInline)) {
-								return;
+						).catch(
+							error => {
+								// otherwise, handle any issues
+								errorHandler(resolution, error, tree.messages);
 							}
-
-							// push readFile promise
-							readFiles.push(fs.readFile(pathToInline).then(function (buffer) {
-								var mime = (filetype(buffer) || {}).mime;
-
-								// processed node
-								return type.then(node, {
-									buffer:   buffer,
-									from:     pathToInline,
-									mimeType: mime
-								});
-							}, function (error) {
-								warnings.push(error);
-							}));
-						}
-					}
-				});
-
-				return node;
+						)
+					);
+				}
 			});
-		}
+
+			return node;
+		});
 
 		// resolve all inlined assets
-		return Promise.all(readFiles).then(function () {
-			if (warnings.length) {
-				console.warn(warnings);
+		return Promise.all(promises).then(
+			() => {
+				// filter errors from messages as warnings
+				const warnings = tree.messages.filter(
+					message => message instanceof Error
+				);
+
+				if (warnings.length) {
+					// conditionally warn the user about any issues
+					console.warn(`\nWarnings (${warnings.length}):\n${ warnings.map(
+						message => `  ${message.message}`
+					).join('\n') }\n`);
+				}
+
+				// return the ast
+				return tree;
 			}
-
-			return tree;
-		});
-	};
-};
-
-module.exports.process = function (contents, options) {
-	return posthtml().use(module.exports(options)).process(contents);
-};
-
-var defaultOptions = {
-	inline: {
-		image: {
-			check: function (node) {
-				return node.tag === 'img' && node.attrs && node.attrs.src;
-			},
-			then: function (node, data) {
-				node.attrs.src = 'data:' + data.mimeType + ';base64,' + data.buffer.toString('base64');
-			}
-		},
-		script: {
-			check: function (node) {
-				return node.tag === 'script' && node.attrs && node.attrs.src;
-			},
-			then: function (node, data) {
-				delete node.attrs.src;
-
-				node.content = [data.buffer.toString('utf8')];
-			}
-		},
-		style: {
-			check: function (node) {
-				return node.tag === 'link' && node.attrs && node.attrs.rel === 'stylesheet' && node.attrs.href;
-			},
-			then: function (node, data) {
-				delete node.attrs.href;
-				delete node.attrs.rel;
-
-				node.tag = 'style';
-
-				node.content = [data.buffer.toString('utf8')];
-			}
-		}
+		);
 	}
-};
+}
 
-function extend(objectA, objectB) {
-	var objectC = {};
+function assign(objectA, objectB) {
+	if (typeof objectA === 'object' && typeof objectB === 'object') {
+		const objectC = Object.assign({}, objectA);
 
-	Object.keys(objectA).concat(Object.keys(objectB)).filter(function (item, index, array) {
-		return array.indexOf(item) === index;
-	}).forEach(function (key) {
-		var valueA = objectA[key];
-
-		if (key in objectB) {
-			var valueB = objectB[key];
-
-			if (typeof valueA === 'object' && Object(valueA) === valueA && typeof valueB === 'object' && Object(valueB) === valueB) {
-				objectC[key] = extend(valueA, valueB);
-			} else {
-				objectC[key] = valueB;
-			}
-		} else {
-			objectC[key] = valueA;
+		for (let key in objectB) {
+			objectC[key] = assign(objectA[key], objectB[key]);
 		}
-	});
 
-	return objectC;
+		return objectC;
+	} else {
+		return objectB;
+	}
 }
