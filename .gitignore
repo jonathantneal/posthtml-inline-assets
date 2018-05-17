@@ -1,3 +1,12 @@
-node_modules/
-npm-debug.log
-test/*.actual.html
+node_modules
+index.bundle.js
+package-lock.json
+*.log*
+*.result.html
+.*
+!.appveyor.yml
+!.editorconfig
+!.gitignore
+!.rollup.js
+!.tape.js
+!.travis.yml

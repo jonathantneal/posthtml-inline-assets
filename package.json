@@ -1,54 +1,66 @@
 {
-  "name": "posthtml-inline-assets",
-  "version": "2.0.0",
-  "description": "Inline external scripts, styles, and images in HTML",
-  "author": "Jonathan Neal <jonathantneal@hotmail.com> (http://jonathantneal.com)",
+  "name": "postcss-posthtml-inline-assets",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Jonathan Neal <jonathantneal@hotmail.com>",
   "license": "CC0-1.0",
-  "repository": "jonathantneal/posthtml-inline-assets",
-  "homepage": "https://github.com/jonathantneal/posthtml-inline-assets#readme",
-  "bugs": "https://github.com/jonathantneal/posthtml-inline-assets/issues",
-  "main": "index.js",
+  "repository": "jonathantneal/postcss-posthtml-inline-assets",
+  "homepage": "https://github.com/jonathantneal/postcss-posthtml-inline-assets#readme",
+  "bugs": "https://github.com/jonathantneal/postcss-posthtml-inline-assets/issues",
+  "main": "index.bundle.js",
+  "module": "index.js",
   "files": [
     "index.js",
-    "LICENSE.md"
+    "index.bundle.js",
+    "lib"
   ],
   "scripts": {
-    "lint": "eslint . --ignore-path .gitignore",
-    "tape": "tape test.js | tap-spec",
-    "test": "npm run lint && npm run tape"
-  },
-  "dependencies": {
-    "deep-assign": "^2.0.0",
-    "file-type": "^7.4.0",
-    "fs-extra": "^5.0.0",
-    "fs-promise": "^2.0.3",
-    "posthtml": "^0.11.1"
-  },
-  "devDependencies": {
-    "cssnano": "^3.7.7",
-    "eslint": "^4.15.0",
-    "eslint-config-dev": "^2.0.0",
-    "tap-spec": "^4.1.1",
-    "tape": "^4.6.2",
-    "uglify-js": "^2.8.29"
+    "prepublishOnly": "npm test",
+    "pretest": "rollup -c .rollup.js --silent",
+    "test": "echo 'Running tests...'; npm run test:ec && npm run test:js && npm run test:tape",
+    "test:ec": "echint --ignore index.bundle.js test",
+    "test:js": "eslint *.js lib/*.js --cache --ignore-path .gitignore --quiet",
+    "test:tape": "node .tape"
   },
   "engines": {
-    "node": ">=0.12.0"
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "file-type": "^7.4.0",
+    "fse": "^4.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26",
+    "babel-eslint": "^8.2",
+    "babel-preset-env": "^1.6",
+    "cssnano": "^4.0.0-rc.2",
+    "echint": "^4.0",
+    "eslint": "^4.15",
+    "eslint-config-dev": "2.0",
+    "posthtml": "^0.11.2",
+    "pre-commit": "^1.2",
+    "rollup": "^0.54",
+    "rollup-plugin-babel": "^3.0",
+    "uglify-js": "^3.3.7"
   },
   "eslintConfig": {
-    "extends": "dev"
+    "extends": "dev",
+    "parser": "babel-eslint"
   },
   "keywords": [
+    "postcss",
+    "css",
+    "postcss-plugin",
     "posthtml",
     "html",
     "posthtml-plugin",
     "inline",
     "assets",
     "javascripts",
-    "images",
-    "styles",
     "js",
+    "images",
     "img",
+    "styles",
     "css"
   ]
 }
