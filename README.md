@@ -29,11 +29,11 @@ npm install posthtml posthtml-inline-assets --save-dev
 Use [PostHTML] and [PostHTML Inline Assets] to process your CSS:
 
 ```js
-import postHTML from 'posthtml-inline-assets';
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const postHTML = require('posthtml-inline-assets');
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtml([
-  require('posthtml-inline-assets')({ /* options */ })
+  posthtmlInlineAssets({ /* options */ })
 ]).process(YOUR_HTML);
 ```
 
@@ -48,8 +48,8 @@ npm install gulp-posthtml --save-dev
 Use [PostHTML Inline Assets] in your Gulpfile:
 
 ```js
-import posthtml from 'gulp-posthtml';
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtml = require('gulp-posthtml');
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 gulp.task('css', () => gulp.src('./src/*.css').pipe(
   posthtml([
@@ -71,7 +71,7 @@ npm install grunt-posthtml --save-dev
 Use [PostHTML Inline Assets] in your Gruntfile:
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 grunt.loadNpmTasks('grunt-posthtml');
 
@@ -98,7 +98,7 @@ is used to determine the relative location of assets. By default, the current
 file directory is used, otherwise the current working directory is used.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtmlInlineAssets({
   cwd: '/path/to/files'
@@ -117,7 +117,7 @@ is used to determine the absolute location of assets. By default, the current
 file directory is used, otherwise the current working directory is used.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtmlInlineAssets({
   root: '/path/to/files'
@@ -141,7 +141,7 @@ behavior is to `ignore` these errors, but they may also `throw` an error,
 or log a `warning`.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtmlInlineAssets({
   // throw an error whenever a resolved asset fails to inline
@@ -189,7 +189,7 @@ instance, `script.resolve` might be changed so that `<script>` elements with a
 `type` attribute are ignored.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtmlInlineAssets({
   transforms: {
@@ -207,7 +207,7 @@ The transform could also be removed entirely by passing the transform a
 non-object.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtmlInlineAssets({
   transforms: {
@@ -221,7 +221,7 @@ New transforms are easy to add. For instance, a new `pics` object might be
 added to inline `<picture>` elements with a `src` attribute.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtmlInlineAssets({
   transforms: {
@@ -243,8 +243,8 @@ Be creative with your transforms. For instance, `script.transform` might be
 changed so that the contents of the script are also minified.
 
 ```js
-import posthtmlInlineAssets from 'posthtml-inline-assets';
-import uglify from 'uglify-js';
+const posthtmlInlineAssets = require('posthtml-inline-assets');
+const uglify = require('uglify-js');
 
 posthtmlInlineAssets({
   transforms: {
@@ -264,9 +264,9 @@ posthtmlInlineAssets({
 [npm-url]: https://www.npmjs.com/package/posthtml-inline-assets
 [npm-img]: https://img.shields.io/npm/v/posthtml-inline-assets.svg
 [cli-url]: https://travis-ci.org/jonathantneal/posthtml-inline-assets
-[cli-img]: https://img.shields.io/travis/jonathantneal/posthtml-inline-assets.svg
+[cli-img]: https://img.shields.io/travis/jonathantneal/posthtml-inline-assets/master.svg
 [win-url]: https://ci.appveyor.com/project/jonathantneal/posthtml-inline-assets
-[win-img]: https://img.shields.io/appveyor/ci/jonathantneal/posthtml-inline-assets.svg
+[win-img]: https://img.shields.io/appveyor/ci/jonathantneal/posthtml-inline-assets/master.svg
 [git-url]: https://gitter.im/posthtml/posthtml
 [git-img]: https://img.shields.io/badge/chat-gitter-blue.svg
 
