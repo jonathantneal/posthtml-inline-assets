@@ -4,7 +4,6 @@ package-lock.json
 *.log*
 *.result.html
 .*
-!.appveyor.yml
 !.editorconfig
 !.gitignore
 !.rollup.js

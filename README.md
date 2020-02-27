@@ -1,9 +1,8 @@
-# PostHTML Inline Assets [<img src="https://posthtml.github.io/posthtml/logo.svg" alt="PostHTML Logo" width="90" height="90" align="right">][posthtml]
+# PostHTML Inline Assets [<img src="https://posthtml.github.io/posthtml/logo.svg" alt="PostHTML" width="90" height="90" align="right">](posthtml)
 
-[![NPM Version][npm-img]][npm-url]
-[![Linux Build Status][cli-img]][cli-url]
-[![Windows Build Status][win-img]][win-url]
-[![Gitter Chat][git-img]][git-url]
+[<img alt="npm version" src="https://img.shields.io/npm/v/posthtml-inline-assets.svg" height="20">](https://www.npmjs.com/package/posthtml-inline-assets)
+[<img alt="build status" src="https://img.shields.io/travis/jonathantneal/posthtml-inline-assets/master" height="20">](https://travis-ci.org/jonathantneal/posthtml-inline-assets?branch=master)
+[<img alt="support chat" src="https://img.shields.io/badge/support-chat-blue.svg" height="20">](https://gitter.im/posthtml/posthtml)
 
 [PostHTML Inline Assets] lets you inline external scripts, styles, and images
 in HTML.
@@ -18,23 +17,21 @@ in HTML.
 
 ## Usage
 
-Add [PostHTML] and [PostHTML Inline Assets] to your build tool:
+Add **PostHTML Inline Assets** to your project:
 
 ```bash
-npm install posthtml posthtml-inline-assets --save-dev
+npm install posthtml-inline-assets --save-dev
 ```
 
-#### Node
-
-Use [PostHTML] and [PostHTML Inline Assets] to process your CSS:
+Use **PostHTML Inline Assets** to process your HTML:
 
 ```js
-const postHTML = require('posthtml');
-const posthtmlInlineAssets = require('posthtml-inline-assets');
+const posthtml = require('posthtml')
+const posthtmlInlineAssets = require('posthtml-inline-assets')
 
 posthtml([
-  posthtmlInlineAssets({ /* options */ })
-]).process(YOUR_HTML);
+  posthtmlInlineAssets(/* pluginOptions */)
+]).process(YOUR_HTML /*, processOptions */)
 ```
 
 #### Gulp
@@ -260,15 +257,6 @@ posthtmlInlineAssets({
   }
 });
 ```
-
-[npm-url]: https://www.npmjs.com/package/posthtml-inline-assets
-[npm-img]: https://img.shields.io/npm/v/posthtml-inline-assets.svg
-[cli-url]: https://travis-ci.org/jonathantneal/posthtml-inline-assets
-[cli-img]: https://img.shields.io/travis/jonathantneal/posthtml-inline-assets/master.svg
-[win-url]: https://ci.appveyor.com/project/jonathantneal/posthtml-inline-assets
-[win-img]: https://img.shields.io/appveyor/ci/jonathantneal/posthtml-inline-assets/master.svg
-[git-url]: https://gitter.im/posthtml/posthtml
-[git-img]: https://img.shields.io/badge/chat-gitter-blue.svg
 
 [Gulp PostHTML]: https://github.com/posthtml/gulp-posthtml
 [Grunt PostHTML]: https://github.com/TCotton/grunt-posthtml
