@@ -1,6 +1,6 @@
 {
   "name": "posthtml-inline-assets",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Inline external scripts, styles, and images in HTML",
   "author": "Jonathan Neal <jonathantneal@hotmail.com>",
   "license": "CC0-1.0",

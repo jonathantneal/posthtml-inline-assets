@@ -1,5 +1,10 @@
 # Changes to PostHTML Inline Assets
 
+### 3.1.0 (February 27, 2020)
+
+- Added support for SVGs — `<img src="{PATH_TO_SVG}" />` (#13)
+- Added support for favicons — `<link rel="icon" href="{PATH_TO_FAVICON}" />` (#14)
+
 ### 3.0.0 (January 19, 2018)
 
 - Added: `root` option to handle absolute paths (`/path/to/asset.css`, etc.)
