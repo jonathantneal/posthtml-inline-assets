@@ -8,6 +8,9 @@ const tests = {
 		'basic': {
 			message: 'supports basic usage'
 		},
+		'svg': {
+			message: 'inline svg files with the correct mime type',
+		},
 		'basic:errors': {
 			message: 'supports { errors: "throw" } option',
 			options: {
