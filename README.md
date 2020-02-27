@@ -29,7 +29,7 @@ npm install posthtml posthtml-inline-assets --save-dev
 Use [PostHTML] and [PostHTML Inline Assets] to process your CSS:
 
 ```js
-const postHTML = require('posthtml-inline-assets');
+const postHTML = require('posthtml');
 const posthtmlInlineAssets = require('posthtml-inline-assets');
 
 posthtml([
